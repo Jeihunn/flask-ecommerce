@@ -1,0 +1,117 @@
+{% extends 'admin/master.html' %}
+
+
+{% block head_css %}
+{{ super() }}
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+{% endblock %}
+
+
+{% block body %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5><i class="fas fa-users"></i> Users</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-1 "><strong>Total Users:</strong> <i class="ml-2 fas fa-user text-primary"></i> {{
+                        user_count }}</p>
+                    <p class=""><strong>Superusers:</strong> <i class="ml-2 fas fa-star text-success"></i> {{
+                        superuser_count }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5><i class="fas fa-tags"></i> Categories</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-1 "><strong>Total Categories:</strong> <i
+                            class="ml-2 fas fa-box-open text-primary"></i> {{ category_count }}</p>
+                    <p class=""><strong>Active Categories:</strong> <i class="ml-2 fas fa-check text-success"></i> {{
+                        category_is_active_count }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5><i class="fas fa-cubes"></i> Products</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-1 "><strong>Total Products:</strong> <i
+                            class="ml-2 fas fa-shopping-cart text-primary"></i> {{ product_count }}</p>
+                    <p class=""><strong>Active Products:</strong> <i class="ml-2 fas fa-check text-success"></i> {{
+                        product_is_active_count }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-secondary text-white">
+                    <h5><i class="fas fa-comments"></i> Comments</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-1 "><strong>Total Comments:</strong> <i class="ml-2 fas fa-comment text-primary"></i>
+                        {{ comment_count }}</p>
+                    <p class="mb-1"><strong>Number of Products with Comments:</strong> <i
+                            class="ml-2 fas fa-box text-info"></i> {{ unique_product_count }}</p>
+                    <p class="mb-1"><strong>Number of Users with Comments:</strong> <i
+                            class="ml-2 fas fa-users text-primary"></i> {{ unique_user_count }}</p>
+                    {% if comment_lasted_created is not none %}
+                    <p class=""><strong>Latest Created:</strong> <i class="ml-2 fas fa-clock text-success"></i>
+                        {{ comment_lasted_created.strftime('%d/%m/%Y %H:%M:%S') }}
+                    </p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-danger text-white">
+                    <h5><i class="fas fa-heart"></i> Favorites</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-1"><strong>Number of Products Favorited:</strong><i
+                            class="ml-2 fa-solid fa-heart-circle-check text-danger"></i> {{ favorite_product_count }}
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-warning text-white">
+                    <h5><i class="fas fa-envelope"></i> Contacts</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-1 "><strong>Total Contacts:</strong> <i
+                            class="ml-2 fas fa-envelope-open text-primary"></i> {{ contact_count }}</p>
+                    {% if contact_lasted_created is not none %}
+                    <p class=""><strong>Latest Created:</strong> <i class="ml-2 fas fa-clock text-success"></i>
+                        {{ contact_lasted_created.strftime('%d/%m/%Y %H:%M:%S') }}
+                    </p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5><i class="fas fa-bell"></i> Subscribers</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-1 "><strong>Total Subscribers:</strong> <i
+                            class="ml-2 fas fa-user-friends text-primary"></i> {{ subscriber_count }}</p>
+                    <p class=""><strong>Active Subscribers:</strong> <i class="ml-2 fas fa-check text-success"></i>
+                        {{ subscriber_is_active_count }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,12 @@
+# =============== BACKUP ===============
+$ docker-compose up -d
+$ docker exec -it <container_name> bash
+bash-4.4# mysqldump -u root -p12345 project > backup.sql
+bash-4.4# exit
+$ docker cp <container_name>:/backup.sql ./backup.sql
+
+# =============== RESTORE ===============
+$ docker-compose down
+$ docker-compose up -d db
+$ docker exec -i <container_name> mysql -u root -p12345 project < backup.sql
+$ docker-compose up -d

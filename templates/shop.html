@@ -1,0 +1,174 @@
+{% extends 'base.html' %}
+
+
+{% block page_title %}Shop{% endblock %}
+
+
+{% block flash_message %}
+{% include 'partials/flash_message_close.html' %}
+{% endblock %}
+
+
+{% block content %}
+<!-- Page Header Start -->
+<div class="container-fluid bg-secondary mb-5">
+  <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 300px">
+    <h1 class="font-weight-semi-bold text-uppercase mb-3">Our Shop</h1>
+    <div class="d-inline-flex">
+      <p class="m-0"><a href="/">Home</a></p>
+      <p class="m-0 px-2">-</p>
+      <p class="m-0">Shop</p>
+    </div>
+  </div>
+</div>
+<!-- Page Header End -->
+
+<!-- Shop Start -->
+<div class="container-fluid pt-5">
+  <div class="row px-xl-5">
+
+    <!-- Shop Sidebar Start -->
+    <div class="col-lg-3 col-md-12">
+      <h5 class="font-weight-semi-bold mb-4">Filter by Category</h5>
+      {% for category in categories %}
+      <a href="{{ url_for('category_view', category_slug=category.slug) }}"
+        class="nav-item nav-link {% if category.slug == selected_category_slug %}text-dark{% endif %}">
+        {{ category.title }} ({{ category.products|selectattr('is_active', 'equalto', true)|list|count }})
+      </a>
+      {% endfor %}
+    </div>
+    <!-- Shop Sidebar End -->
+
+    <!-- Shop Product Start -->
+    <div class="col-lg-9 col-md-12">
+
+      {% if query %}
+      <p class="h5 mb-4"> {{ products.total }} results for "<strong class="text-danger">{{ query }}</strong>"</p>
+      <hr>
+      {% elif category %}
+      <p class="h5">Category: <strong>{{ category.title }}</strong></p>
+      <p class="h6">{{ products.total }} Results</p>
+      <hr>
+      {% else %}
+      <p class="h6">{{ products.total }} Results</p>
+      <hr>
+      {% endif %}
+
+      <div class="row pb-3">
+
+        <!-- Products -->
+        {% for product in products.items %}
+        <a href="{{ url_for('detail_view', product_slug=product.slug) }}" class="text-decoration-none">
+          <div class="col-lg-4 col-md-6 col-sm-12 pb-1">
+            <div class="card product-item border-0 mb-4">
+              <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
+                <img class="img-fluid w-100"
+                  src="{{ url_for('static', filename='uploads/product_cover/' ~ product.cover_photo) }}" alt="" />
+              </div>
+              <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
+                <h6 class="text-truncate mb-3">{{ product.title }}</h6>
+                <div class="d-flex justify-content-center">
+                  <h6>${{ product.discounted_price }}</h6>
+                  <h6 class="text-muted ml-2"><del>${{ product.price }}</del></h6>
+                </div>
+              </div>
+              <div class="card-footer d-flex justify-content-between bg-light border">
+                <a href="{{ url_for('detail_view', product_slug=product.slug) }}" class="btn btn-sm text-dark p-0">
+                  <i class="fas fa-eye text-primary mr-1"></i>
+                  View Detail
+                </a>
+              </div>
+            </div>
+          </div>
+        </a>
+        {% endfor %}
+        <!-- END Products -->
+
+        <!-- Pagination -->
+        {% if products.pages > 1 %}
+        <div class="col-12 pb-1">
+          <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center mb-3">
+              {% if products.has_prev %}
+              <li class="page-item">
+                {% if request.endpoint == 'category_view' %}
+                <a class="page-link"
+                  href="{{ url_for(request.endpoint, category_slug=category.slug, page=products.prev_num) }}"
+                  aria-label="Previous">
+                  {% elif request.endpoint == 'search_products_view' %}
+                  <a class="page-link" href="{{ url_for(request.endpoint, query=query, page=products.prev_num) }}"
+                    aria-label="Previous">
+                    {% else %}
+                    <a class="page-link" href="{{ url_for('index_view', page=products.prev_num) }}"
+                      aria-label="Previous">
+                      {% endif %}
+                      <span aria-hidden="true">&laquo;</span>
+                      <span class="sr-only">Previous</span>
+                    </a>
+              </li>
+              {% else %}
+              <li class="page-item disabled">
+                <span class="page-link" aria-hidden="true">&laquo;</span>
+              </li>
+              {% endif %}
+
+              {% for page_num in products.iter_pages() %}
+              {% if page_num %}
+              {% if products.page == page_num %}
+              <li class="page-item active">
+                <span class="page-link">{{ page_num }}</span>
+              </li>
+              {% else %}
+              <li class="page-item">
+                {% if request.endpoint == 'category_view' %}
+                <a class="page-link"
+                  href="{{ url_for(request.endpoint, category_slug=category.slug, page=page_num) }}">{{ page_num }}</a>
+                {% elif request.endpoint == 'search_products_view' %}
+                <a class="page-link" href="{{ url_for(request.endpoint, query=query, page=page_num) }}">{{ page_num
+                  }}</a>
+                {% else %}
+                <a class="page-link" href="{{ url_for('index_view', page=page_num) }}">{{ page_num }}</a>
+                {% endif %}
+              </li>
+              {% endif %}
+              {% else %}
+              <li class="page-item disabled">
+                <span class="page-link">...</span>
+              </li>
+              {% endif %}
+              {% endfor %}
+
+              {% if products.has_next %}
+              <li class="page-item">
+                {% if request.endpoint == 'category_view' %}
+                <a class="page-link"
+                  href="{{ url_for(request.endpoint, category_slug=category.slug, page=products.next_num) }}"
+                  aria-label="Next">
+                  {% elif request.endpoint == 'search_products_view' %}
+                  <a class="page-link" href="{{ url_for(request.endpoint, query=query, page=products.next_num) }}"
+                    aria-label="Next">
+                    {% else %}
+                    <a class="page-link" href="{{ url_for('index_view', page=products.next_num) }}" aria-label="Next">
+                      {% endif %}
+                      <span aria-hidden="true">&raquo;</span>
+                      <span class="sr-only">Next</span>
+                    </a>
+              </li>
+              {% else %}
+              <li class="page-item disabled">
+                <span class="page-link" aria-hidden="true">&raquo;</span>
+              </li>
+              {% endif %}
+            </ul>
+          </nav>
+        </div>
+        {% endif %}
+        <!-- END Pagination -->
+
+      </div>
+    </div>
+    <!-- Shop Product End -->
+  </div>
+</div>
+<!-- Shop End -->
+{% endblock %}

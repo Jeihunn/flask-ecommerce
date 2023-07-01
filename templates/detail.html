@@ -1,0 +1,239 @@
+{% extends 'base.html' %}
+
+
+{% block page_title %}Detail{% endblock %}
+
+
+{% block css %}
+<style>
+  .comment-section {
+    max-height: 400px;
+    overflow-y: auto;
+  }
+
+  @media (max-height: 400px) {
+    .comment-section {
+      overflow-y: hidden;
+    }
+  }
+</style>
+{% endblock %}
+
+
+{% block flash_message %}
+{% include 'partials/flash_message_close.html' %}
+{% endblock %}
+
+
+{% block content %}
+<!-- Page Header Start -->
+<div class="container-fluid bg-secondary mb-5">
+  <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 300px">
+    <h1 class="font-weight-semi-bold text-uppercase mb-3">Shop Detail</h1>
+    <div class="d-inline-flex">
+      <p class="m-0"><a href="/">Home</a></p>
+      <p class="m-0 px-2">-</p>
+      <p class="m-0">Shop Detail</p>
+    </div>
+  </div>
+</div>
+<!-- Page Header End -->
+
+<!-- Shop Detail Start -->
+<div class="container-fluid py-5">
+  <div class="row px-xl-5">
+    <div class="col-lg-5 pb-5">
+      <div id="product-carousel" class="carousel slide" data-ride="carousel">
+        <div class="carousel-inner border">
+
+          {% for image in product.images %}
+          <div class="carousel-item {% if loop.first %}active{% endif %}">
+            <img class="w-100 h-100" src="{{ url_for('static', filename='uploads/product_images/' ~ image.filename) }}"
+              alt="Image" />
+          </div>
+          {% endfor %}
+
+        </div>
+        <a class="carousel-control-prev" href="#product-carousel" data-slide="prev">
+          <i class="fa fa-2x fa-angle-left text-dark"></i>
+        </a>
+        <a class="carousel-control-next" href="#product-carousel" data-slide="next">
+          <i class="fa fa-2x fa-angle-right text-dark"></i>
+        </a>
+      </div>
+    </div>
+
+    <div class="col-lg-7 pb-5">
+      <h3 class="font-weight-semi-bold">{{ product.title }}</h3>
+      <div class="d-flex justify-content-start">
+        <h3 class="font-weight-semi-bold">${{ product.discounted_price }}</h3>
+        <h3 class="font-weight-semi-bold mb-4 text-muted ml-2"><del>${{ product.price }}</del></h3>
+      </div>
+      <p class="mb-4">
+        Volup erat ipsum diam elitr rebum et dolor. Est nonumy elitr erat
+        diam stet sit clita ea. Sanc invidunt ipsum et, labore clita lorem
+        magna lorem ut. Erat lorem duo dolor no sea nonumy. Accus labore
+        stet, est lorem sit diam sea et justo, amet at lorem et eirmod ipsum
+        diam et rebum kasd rebum.
+      </p>
+
+      {% if current_user.is_authenticated %}
+      {% if product not in favorites %}
+      <div class="d-flex align-items-center mb-4 pt-2">
+        <a class="btn btn-primary px-3" href="{{ url_for('add_favorite_view', product_slug=product.slug) }}">
+          <i class="fa fa-heart mr-1" aria-hidden="true"></i>
+          Add To Favorites
+        </a>
+      </div>
+      {% else %}
+      <div class="d-flex align-items-center mb-4 pt-2">
+        <a class="btn btn-danger px-3" href="{{ url_for('remove_favorite_view', product_slug=product.slug) }}">
+          <i class="fa fa-times" aria-hidden="true"></i>
+          Remove From Favorites
+        </a>
+      </div>
+      {% endif %}
+      {% endif %}
+
+      <div class="d-flex pt-2">
+        <p class="text-dark font-weight-medium mb-0 mr-2">Share on:</p>
+        <div class="d-inline-flex">
+          <a class="text-dark px-2" href="">
+            <i class="fab fa-facebook-f"></i>
+          </a>
+          <a class="text-dark px-2" href="">
+            <i class="fab fa-twitter"></i>
+          </a>
+          <a class="text-dark px-2" href="">
+            <i class="fab fa-linkedin-in"></i>
+          </a>
+          <a class="text-dark px-2" href="">
+            <i class="fab fa-pinterest"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row px-xl-5">
+    <div class="col">
+      <div class="nav nav-tabs justify-content-center border-secondary mb-4">
+        <a class="nav-item nav-link active" data-toggle="tab" href="#tab-pane-1">Description</a>
+        <a class="nav-item nav-link" data-toggle="tab" href="#tab-pane-3">Reviews ({{ product.comments|count }})</a>
+      </div>
+      <div class="tab-content">
+        <div class="tab-pane fade show active" id="tab-pane-1">
+          <h4 class="mb-3">Product Description</h4>
+          <p>
+            {{ product.description }}
+          </p>
+        </div>
+        <div class="tab-pane fade" id="tab-pane-3">
+          <div class="row">
+
+            <div class="col-md-6">
+              <h4 class="mb-4">{{ product.comments|count }} review for "{{ product.title }}"</h4>
+              <div class="comment-section">
+                {% for comment in comments %}
+                <div class="media mb-4">
+                  {% if comment.user %}
+                  <img src="{{ url_for('static', filename='uploads/profile/' ~ comment.user.profile_photo) }}"
+                    alt="Image" class="img-fluid mr-3 mt-1" style="width: 45px" />
+                  {% else %}
+                  <img src="{{ url_for('static', filename='uploads/profile/default_user.webp') }}" alt="Image"
+                    class="img-fluid mr-3 mt-1" style="width: 45px" />
+                  {% endif %}
+
+                  <div class="media-body">
+                    <h6>
+                      {% if comment.user %}
+                      {{ comment.user.first_name }} {{ comment.user.last_name }}
+                      {% else %}
+                      <span class="text-danger">Deleted User</span>
+                      {% endif %}
+
+                      <small> - <i>{{comment.created_at.strftime('%d/%m/%Y %H:%M') }}</i></small>
+
+                      {% if comment.user == current_user %}
+                      <a href="#"><i class="float-right mr-3 fas fa-edit"></i></a>
+                      {% endif %}
+                    </h6>
+                    <p>
+                      {{ comment.review }}
+                    </p>
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+
+            {% if current_user.is_authenticated %}
+            <div class="col-md-6">
+              <h4 class="mb-4">Leave a review</h4>
+              <small>
+                Your email address will not be published. Required fields are marked *
+              </small>
+              <form action="" method="POST">
+                {{ comment_form.csrf_token }}
+                <div class="form-group">
+                  <label for="message">Your Review *</label>
+                  {{ comment_form.review(class="form-control", cols="30", rows="5") }}
+                </div>
+                <div class="form-group mb-0">
+                  {{ comment_form.submit(class="btn btn-primary px-3", value="Leave Your Review") }}
+                </div>
+              </form>
+            </div>
+            {% else %}
+            <div class="col-md-6">
+              <p class="font-italic" style="font-size: 1.4rem;">To leave a comment, please
+                <a style=" color: blue;" class="font-weight-bold" href="/login/">log in</a>.
+              </p>
+            </div>
+            {% endif %}
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Shop Detail End -->
+
+<!-- Products Start -->
+<div class="container-fluid py-5">
+  <div class="text-center mb-4">
+    <h2 class="section-title px-5">
+      <span class="px-2">You May Also Like</span>
+    </h2>
+  </div>
+  <div class="row px-xl-5 justify-content-center" style="gap: 30px">
+    {% for product in related_products %}
+    <a href="{{ url_for('detail_view', product_slug=product.slug) }}" class="text-decoration-none">
+      <div class="col-12 col-sm-5">
+        <div class="card product-item border-0">
+          <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
+            <img class="img-fluid w-100"
+              src="{{ url_for('static', filename='uploads/product_cover/' ~ product.cover_photo) }}" alt="" />
+          </div>
+          <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
+            <h6 class="text-truncate mb-3">{{ product.title }}</h6>
+            <div class="d-flex justify-content-center">
+              <h6>${{ product.discounted_price }}</h6>
+              <h6 class="text-muted ml-2"><del>${{ product.price }}</del></h6>
+            </div>
+          </div>
+          <div class="card-footer d-flex justify-content-between bg-light border">
+            <a href="{{ url_for('detail_view', product_slug=product.slug) }}" class="btn btn-sm text-dark p-0">
+              <i class="fas fa-eye text-primary mr-1"></i>
+              View Detail
+            </a>
+          </div>
+        </div>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+</div>
+<!-- Products End -->
+{% endblock %}
